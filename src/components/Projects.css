@@ -1,0 +1,155 @@
+.projects-scroll-wrap {
+  position: relative;
+}
+.scroll-arrow {
+  position: absolute;
+  top: 42%;
+  transform: translateY(-50%);
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: var(--card-bg);
+  border: 1px solid var(--line);
+  color: var(--rose-deep);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 10px 24px rgba(162, 79, 108, 0.15);
+  z-index: 5;
+  transition: all 0.25s ease;
+}
+.scroll-arrow:hover {
+  background: var(--rose-deep);
+  border-color: var(--rose-deep);
+  color: #fff;
+  transform: translateY(-50%) scale(1.06);
+}
+.scroll-arrow.left {
+  left: -6px;
+}
+.scroll-arrow.right {
+  right: -6px;
+}
+@media (max-width: 900px) {
+  /* touch swipe already works naturally on mobile — arrows would just
+     take up space and get in the way of the horizontal swipe gesture */
+  .scroll-arrow {
+    display: none;
+  }
+}
+
+.projects-grid {
+  display: flex;
+  gap: 28px;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scroll-padding-inline: 4px;
+  padding: 6px 4px 6px;
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* old Edge/IE */
+}
+.projects-grid::-webkit-scrollbar {
+  display: none; /* Chrome, Safari */
+}
+.project-card {
+  flex: 0 0 auto;
+  width: 340px;
+  scroll-snap-align: start;
+  border-radius: var(--card-radius);
+  overflow: hidden;
+  border: 1px solid var(--line);
+  background: var(--card-bg);
+  transition:
+    transform 0.3s ease,
+    box-shadow 0.3s ease;
+}
+.project-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 24px 48px rgba(162, 79, 108, 0.14);
+}
+.project-visual {
+  height: 200px;
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(135deg, var(--rose) 0%, var(--lavender) 100%);
+}
+.project-visual::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    circle at 80% 20%,
+    rgba(255, 255, 255, 0.35),
+    transparent 55%
+  );
+}
+.project-body {
+  padding: 26px 26px 28px;
+}
+.project-body h3 {
+  font-family: "Cormorant Garamond", serif;
+  font-style: italic;
+  font-size: 1.5rem;
+  margin-bottom: 12px;
+}
+/* NEW: category tag sits on its own line, between the title and the
+   description, instead of floating over the image or sharing a row
+   with the title */
+.tag-float {
+  display: inline-block;
+  background: var(--surface);
+  color: var(--rose-deep);
+  font-size: 0.72rem;
+  font-weight: 600;
+  padding: 5px 12px;
+  border-radius: 999px;
+  white-space: nowrap;
+  margin-bottom: 14px;
+}
+.project-body p {
+  color: var(--muted);
+  font-size: 0.92rem;
+  line-height: 1.8;
+  margin-bottom: 18px;
+}
+
+/* NEW: two links (GitHub + Live Demo) sitting side by side */
+.project-links-row {
+  display: flex;
+  align-items: center;
+  gap: 22px;
+  flex-wrap: wrap;
+}
+.project-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 600;
+  font-size: 0.88rem;
+  color: var(--ink);
+}
+.project-link svg {
+  width: 15px;
+  height: 15px;
+}
+.project-link:hover {
+  color: var(--rose-deep);
+}
+
+/* NEW: loading / error / empty states while Sanity data is fetched */
+.projects-status {
+  text-align: center;
+  color: var(--muted);
+  padding: 40px 0;
+  font-size: 0.95rem;
+}
+.projects-status-error {
+  color: var(--rose-deep);
+}
+
+@media (max-width: 900px) {
+  .project-card {
+    width: 280px;
+  }
+}

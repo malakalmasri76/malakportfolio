@@ -1,0 +1,75 @@
+.preloader {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  background: #050505;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  transition: opacity 0.6s ease, visibility 0.6s ease;
+}
+
+.preloader-hide {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.preloader-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: fadeScale 1.2s ease-in-out infinite alternate;
+}
+
+.preloader-logo {
+  width: min(60vw, 260px);
+  height: auto;
+  filter: drop-shadow(0 0 25px rgba(180, 140, 255, 0.25));
+}
+
+@keyframes fadeScale {
+  0% {
+    opacity: 0.7;
+    transform: scale(0.97);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.preloader-bottom {
+  position: absolute;
+  bottom: 48px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  width: min(80vw, 320px);
+}
+
+.progress-track {
+  width: 100%;
+  height: 4px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.08);
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #8b7cf6, #f4a6c8);
+  transition: width 0.2s ease;
+}
+
+.progress-text {
+  font-size: 12px;
+  letter-spacing: 1px;
+  color: rgba(255, 255, 255, 0.5);
+  font-family: sans-serif;
+}

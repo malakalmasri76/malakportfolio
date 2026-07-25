@@ -1,0 +1,20 @@
+footer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 14px;
+  padding: 44px 24px 30px;
+  color: var(--muted);
+  font-size: 0.85rem;
+  text-align: center;
+}
+footer .logo {
+  display: inline-flex;
+  margin-bottom: 0;
+}
+.footer-logo-img {
+  height: 80px;
+  width: auto;
+  display: block;
+}
