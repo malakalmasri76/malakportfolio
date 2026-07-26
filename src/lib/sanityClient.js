@@ -1,14 +1,14 @@
 import { createClient } from '@sanity/client'
-import imageUrlBuilder from '@sanity/image-url'
+import { createImageUrlBuilder } from '@sanity/image-url'
 
 export const sanityClient = createClient({
   projectId: 'mdvzdco5',
-  dataset: 'production', 
+  dataset: 'production', // ⚠️ change this if your dataset has a different name
   apiVersion: '2024-01-01',
-  useCdn: true 
+  useCdn: true // fine for public, read-only data like a portfolio's projects
 })
 
-const builder = imageUrlBuilder(sanityClient)
+const builder = createImageUrlBuilder(sanityClient)
 
 // Usage: urlFor(project.image).width(600).height(400).url()
 export function urlFor(source) {
