@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import logo from '../assets/malak-logo2.png'
-import './Preloader.css'
+import "./preloader.css";
 
 export default function Preloader({ onFinish }) {
   const [progress, setProgress] = useState(0)
