@@ -1,12 +1,155 @@
-.projects-scroll-wrap {
+.projects-carousel {
   position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
-.scroll-arrow {
+
+/* --- the big row card: image one side, text the other --- */
+.project-row {
+  display: flex;
+  align-items: center;
+  gap: 40px;
+  width: 100%;
+  padding: 32px;
+  border: 1px solid var(--line);
+  border-radius: var(--card-radius);
+  background: var(--card-bg);
+  animation: card-fade-in 0.4s ease;
+}
+
+@keyframes card-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* --- image side --- */
+.project-visual {
+  flex: 0 0 46%;
+  position: relative;
+  aspect-ratio: 16 / 9;
+  border-radius: var(--card-radius);
+  overflow: hidden;
+  border: 1px solid var(--line);
+  background: linear-gradient(135deg, var(--rose) 0%, var(--lavender) 100%);
+}
+.project-visual-img {
   position: absolute;
-  top: 42%;
+  inset: 0;
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+}
+
+/* optional status badge — only renders if a project has a `status` field */
+.status-badge {
+  position: absolute;
+  top: 14px;
+  inset-inline-end: 14px;
+  z-index: 2;
+  font-size: 0.7rem;
+  font-weight: 600;
+  padding: 4px 11px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.92);
+  color: var(--rose-deep);
+}
+
+/* --- text side --- */
+.project-info {
+  flex: 1 1 54%;
+  min-width: 0;
+}
+.project-info h3 {
+  font-family: "Cormorant Garamond", serif;
+  font-style: italic;
+  font-size: 1.9rem;
+  margin-bottom: 12px;
+}
+
+.tags-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+.tag-float {
+  display: inline-block;
+  background: var(--surface);
+  color: var(--rose-deep);
+  font-size: 0.72rem;
+  font-weight: 600;
+  padding: 5px 12px;
+  border-radius: 999px;
+  white-space: nowrap;
+  border: 1px solid var(--line);
+}
+
+.project-info p {
+  color: var(--muted);
+  font-size: 0.96rem;
+  line-height: 1.85;
+  margin-bottom: 16px;
+}
+
+/* Github is the primary filled action, the live demo is a quieter text
+   link with a trailing arrow. */
+.project-links-row {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+.project-link-primary {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 600;
+  font-size: 0.88rem;
+  color: #fff;
+  background: var(--rose-deep);
+  padding: 10px 18px;
+  border-radius: 999px;
+  transition: filter 0.2s ease;
+}
+.project-link-primary:hover {
+  filter: brightness(1.08);
+}
+.project-link-primary svg {
+  width: 15px;
+  height: 15px;
+}
+.project-link-secondary {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 600;
+  font-size: 0.88rem;
+  color: var(--ink);
+}
+.project-link-secondary:hover {
+  color: var(--rose-deep);
+}
+.project-link-secondary .arrow {
+  transition: transform 0.2s ease;
+}
+.project-link-secondary:hover .arrow {
+  transform: translate(2px, -2px);
+}
+
+/* --- nav arrows, positioned half-outside the card like the reference --- */
+.carousel-arrow {
+  position: absolute;
+  top: 50%;
   transform: translateY(-50%);
-  width: 38px;
-  height: 38px;
+  width: 44px;
+  height: 44px;
   border-radius: 50%;
   background: var(--card-bg);
   border: 1px solid var(--line);
@@ -19,125 +162,41 @@
   z-index: 5;
   transition: all 0.25s ease;
 }
-.scroll-arrow:hover {
+.carousel-arrow:hover {
   background: var(--rose-deep);
   border-color: var(--rose-deep);
   color: #fff;
   transform: translateY(-50%) scale(1.06);
 }
-.scroll-arrow.left {
-  left: -6px;
+.carousel-arrow.left {
+  left: -22px;
 }
-.scroll-arrow.right {
-  right: -6px;
-}
-@media (max-width: 900px) {
-  /* touch swipe already works naturally on mobile — arrows would just
-     take up space and get in the way of the horizontal swipe gesture */
-  .scroll-arrow {
-    display: none;
-  }
+.carousel-arrow.right {
+  right: -22px;
 }
 
-.projects-grid {
+/* --- position dots below the card --- */
+.carousel-dots {
   display: flex;
-  gap: 28px;
-  overflow-x: auto;
-  scroll-snap-type: x mandatory;
-  scroll-padding-inline: 4px;
-  padding: 6px 4px 6px;
-  scrollbar-width: none; /* Firefox */
-  -ms-overflow-style: none; /* old Edge/IE */
-}
-.projects-grid::-webkit-scrollbar {
-  display: none; /* Chrome, Safari */
-}
-.project-card {
-  flex: 0 0 auto;
-  width: 340px;
-  scroll-snap-align: start;
-  border-radius: var(--card-radius);
-  overflow: hidden;
-  border: 1px solid var(--line);
-  background: var(--card-bg);
-  transition:
-    transform 0.3s ease,
-    box-shadow 0.3s ease;
-}
-.project-card:hover {
-  transform: translateY(-6px);
-  box-shadow: 0 24px 48px rgba(162, 79, 108, 0.14);
-}
-.project-visual {
-  height: 200px;
-  position: relative;
-  overflow: hidden;
-  background: linear-gradient(135deg, var(--rose) 0%, var(--lavender) 100%);
-}
-.project-visual::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: radial-gradient(
-    circle at 80% 20%,
-    rgba(255, 255, 255, 0.35),
-    transparent 55%
-  );
-}
-.project-body {
-  padding: 26px 26px 28px;
-}
-.project-body h3 {
-  font-family: "Cormorant Garamond", serif;
-  font-style: italic;
-  font-size: 1.5rem;
-  margin-bottom: 12px;
-}
-/* NEW: category tag sits on its own line, between the title and the
-   description, instead of floating over the image or sharing a row
-   with the title */
-.tag-float {
-  display: inline-block;
-  background: var(--surface);
-  color: var(--rose-deep);
-  font-size: 0.72rem;
-  font-weight: 600;
-  padding: 5px 12px;
-  border-radius: 999px;
-  white-space: nowrap;
-  margin-bottom: 14px;
-}
-.project-body p {
-  color: var(--muted);
-  font-size: 0.92rem;
-  line-height: 1.8;
-  margin-bottom: 18px;
-}
-
-/* NEW: two links (GitHub + Live Demo) sitting side by side */
-.project-links-row {
-  display: flex;
-  align-items: center;
-  gap: 22px;
-  flex-wrap: wrap;
-}
-.project-link {
-  display: inline-flex;
-  align-items: center;
   gap: 8px;
-  font-weight: 600;
-  font-size: 0.88rem;
-  color: var(--ink);
+  margin-top: 20px;
 }
-.project-link svg {
-  width: 15px;
-  height: 15px;
+.carousel-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--line);
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  transition: background 0.2s ease, transform 0.2s ease;
 }
-.project-link:hover {
-  color: var(--rose-deep);
+.carousel-dot.is-active {
+  background: var(--rose-deep);
+  transform: scale(1.25);
 }
 
-/* NEW: loading / error / empty states while Sanity data is fetched */
+/* loading / error / empty states while Sanity data is fetched */
 .projects-status {
   text-align: center;
   color: var(--muted);
@@ -148,8 +207,35 @@
   color: var(--rose-deep);
 }
 
-@media (max-width: 900px) {
-  .project-card {
-    width: 280px;
+@media (max-width: 800px) {
+  .project-row {
+    flex-direction: column;
+    gap: 16px;
+    padding: 20px;
+    height: 600px;
+    overflow: hidden;
+  }
+  .project-visual {
+    flex: none;
+    width: 100%;
+    aspect-ratio: 16 / 9;
+  }
+  .project-info {
+    flex: 1;
+    width: 100%;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+  }
+  .carousel-arrow {
+    width: 36px;
+    height: 36px;
+  }
+  .carousel-arrow.left {
+    left: -8px;
+  }
+  .carousel-arrow.right {
+    right: -8px;
   }
 }

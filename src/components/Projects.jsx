@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
 import SectionHead from './SectionHead'
 import { sanityClient, urlFor } from '../lib/sanityClient'
@@ -10,16 +10,8 @@ const GithubIcon = () => (
   </svg>
 )
 
-const ExternalIcon = () => (
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-    <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
-    <path d="M15 3h6v6" />
-    <path d="M10 14 21 3" />
-  </svg>
-)
-
-// GROQ query — pulls every "project" document, newest last.
-// Matches the Sanity schema fields: title, category, description, image, github, demo
+// GROQ query — pulls every "project" document, oldest first.
+// `status` is optional — only add it to your schema if you want the badge.
 const PROJECTS_QUERY = `*[_type == "project"] | order(_createdAt asc){
   _id,
   title,
@@ -27,21 +19,14 @@ const PROJECTS_QUERY = `*[_type == "project"] | order(_createdAt asc){
   description,
   image,
   github,
-  demo
+  demo,
+  status
 }`
 
 export default function Projects({ t, lang }) {
   const [projects, setProjects] = useState([])
   const [status, setStatus] = useState('loading') // 'loading' | 'ready' | 'error'
-  const scrollRef = useRef(null)
-
-  const scrollByCard = (direction) => {
-    const el = scrollRef.current
-    if (!el) return
-    const cardWidth = el.querySelector('.project-card')?.offsetWidth || 340
-    const gap = 28
-    el.scrollBy({ left: direction * (cardWidth + gap), behavior: 'smooth' })
-  }
+  const [current, setCurrent] = useState(0)
 
   useEffect(() => {
     let cancelled = false
@@ -71,6 +56,19 @@ export default function Projects({ t, lang }) {
       : "Couldn't load projects right now. Please try again later."
   const emptyLabel = lang === 'ar' ? 'لا توجد مشاريع منشورة بعد.' : 'No projects published yet.'
 
+  // Supports either a `tags` array field, or the existing single
+  // `category` string split by comma.
+  const getTags = (p) => {
+    if (Array.isArray(p.tags) && p.tags.length) return p.tags
+    if (p.category) return p.category.split(',').map((s) => s.trim()).filter(Boolean)
+    return []
+  }
+
+  const goPrev = () => setCurrent((i) => (i - 1 + projects.length) % projects.length)
+  const goNext = () => setCurrent((i) => (i + 1) % projects.length)
+
+  const p = projects[current]
+
   return (
     <section className="section" id="projects" style={{ background: 'var(--surface)' }}>
       <div className="wrap">
@@ -81,52 +79,67 @@ export default function Projects({ t, lang }) {
         {status === 'ready' && projects.length === 0 && <p className="projects-status">{emptyLabel}</p>}
 
         {status === 'ready' && projects.length > 0 && (
-          <div className="projects-scroll-wrap">
-            <button className="scroll-arrow left" onClick={() => scrollByCard(-1)} aria-label="Scroll left">
-              <ChevronLeft size={18} />
+          <div className="projects-carousel">
+            <button className="carousel-arrow left" onClick={goPrev} aria-label="Previous project">
+              <ChevronLeft size={20} />
             </button>
 
-            <div className="projects-grid" ref={scrollRef}>
-              {projects.map((p) => (
-                <div className="project-card" key={p._id}>
-                  <div
-                    className="project-visual"
-                    style={
-                      p.image
-                        ? {
-                            backgroundImage: `url(${urlFor(p.image).width(700).height(460).fit('crop').url()})`,
-                            backgroundSize: 'cover',
-                            backgroundPosition: 'center'
-                          }
-                        : { background: 'linear-gradient(135deg,var(--rose) 0%, var(--lavender) 100%)' }
-                    }
-                  />
-                  <div className="project-body">
-                    <h3>{p.title}</h3>
-                    {p.category && <span className="tag-float">{p.category}</span>}
-                    {p.description && <p>{p.description}</p>}
-                    <div className="project-links-row">
-                      {p.github && (
-                        <a className="project-link" href={p.github} target="_blank" rel="noopener noreferrer">
-                          <GithubIcon />
-                          {t.projects.viewGithub}
-                        </a>
-                      )}
-                      {p.demo && (
-                        <a className="project-link" href={p.demo} target="_blank" rel="noopener noreferrer">
-                          <ExternalIcon />
-                          {demoLabel}
-                        </a>
-                      )}
-                    </div>
+            <div className="project-row" key={p._id}>
+              <div className="project-visual">
+                {p.status && <span className="status-badge">{p.status}</span>}
+                <div
+                  className="project-visual-img"
+                  style={
+                    p.image
+                      ? {
+                          backgroundImage: `url(${urlFor(p.image).width(1000).fit('max').url()})`
+                        }
+                      : { background: 'linear-gradient(135deg,var(--rose) 0%, var(--lavender) 100%)' }
+                  }
+                />
+              </div>
+
+              <div className="project-info">
+                <h3>{p.title}</h3>
+                {getTags(p).length > 0 && (
+                  <div className="tags-row">
+                    {getTags(p).map((tag) => (
+                      <span className="tag-float" key={tag}>{tag}</span>
+                    ))}
                   </div>
+                )}
+                {p.description && <p>{p.description}</p>}
+                <div className="project-links-row">
+                  {p.github && (
+                    <a className="project-link-primary" href={p.github} target="_blank" rel="noopener noreferrer">
+                      <GithubIcon />
+                      {t.projects.viewGithub}
+                    </a>
+                  )}
+                  {p.demo && (
+                    <a className="project-link-secondary" href={p.demo} target="_blank" rel="noopener noreferrer">
+                      {demoLabel}
+                      <span className="arrow">↗</span>
+                    </a>
+                  )}
                 </div>
-              ))}
+              </div>
             </div>
 
-            <button className="scroll-arrow right" onClick={() => scrollByCard(1)} aria-label="Scroll right">
-              <ChevronRight size={18} />
+            <button className="carousel-arrow right" onClick={goNext} aria-label="Next project">
+              <ChevronRight size={20} />
             </button>
+
+            <div className="carousel-dots">
+              {projects.map((proj, i) => (
+                <button
+                  key={proj._id}
+                  className={`carousel-dot${i === current ? ' is-active' : ''}`}
+                  onClick={() => setCurrent(i)}
+                  aria-label={`Go to project ${i + 1}`}
+                />
+              ))}
+            </div>
           </div>
         )}
       </div>
